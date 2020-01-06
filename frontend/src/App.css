@@ -45,3 +45,11 @@
   overflow: scroll;
   height: 600px;
 }
+
+.alert img {
+  border: 3px solid #9cc1d3;
+  border-radius: 50%;
+  margin-right: 5px;
+  width: 50px;
+  left: 0;
+}

@@ -113,19 +113,28 @@ function TweetList() {
               aria-describedby="basic-addon2"
             />
             <div className="input-group-append">
-              <Button variant="outline-primary">Search</Button>
+              <Button variant="outline-primary" type="submit">
+                Search
+              </Button>
             </div>
           </div>
         </form>
         <div id="tweets">
           {tweets
             .filter(tweet => tweet !== undefined)
+            .reverse()
+            .slice(0, 49)
             .map((tweet: Tweet) => (
               <Alert
                 key={tweet.id}
                 variant={sentiment[tweet.sentimentType] as "success"}
               >
-                <Alert.Heading>@{tweet.screenName}</Alert.Heading>
+                <Alert.Heading>
+                  <img src={tweet.profileImageUrl} />
+                  <a href={"https://twitter.com/" + tweet.screenName}>
+                    {tweet.userName}
+                  </a>
+                </Alert.Heading>
                 {tweet.originalText}
                 <hr />
                 <p className="mb-0">
