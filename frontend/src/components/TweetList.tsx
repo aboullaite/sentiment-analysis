@@ -29,7 +29,7 @@ function TweetList() {
 
   React.useEffect(() => {
     const eventSource = new EventSource(
-      "http://localhost:8080/stream/" + state.hashtag
+      process.env.REACT_APP_API_URL + state.hashtag
     );
     // eventSource.onopen = (event: any) => console.log("open", event);
     eventSource.onmessage = (event: any) => {
@@ -57,7 +57,9 @@ function TweetList() {
     setState: (s: TweetListState) => void
   ): EventSource {
     state.eventSource?.close();
-    const eventSource = new EventSource(process.env.PUBLIC_URL + state.hashtag);
+    const eventSource = new EventSource(
+      process.env.REACT_APP_API_URL + state.hashtag
+    );
     // eventSource.onopen = (event: any) => console.log("open", event);
     eventSource.onmessage = (event: any) => {
       const tweet = JSON.parse(event.data);
@@ -129,7 +131,10 @@ function TweetList() {
               >
                 <Alert.Heading>
                   <img src={tweet.profileImageUrl} />
-                  <a href={"https://twitter.com/" + tweet.screenName}>
+                  <a
+                    href={"https://twitter.com/" + tweet.screenName}
+                    className="text-muted"
+                  >
                     {tweet.userName}
                   </a>
                 </Alert.Heading>

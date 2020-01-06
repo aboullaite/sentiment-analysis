@@ -39,7 +39,6 @@ export function Doughnut({ tweets }: Props) {
     const grouped = _.groupBy(tweets, "sentimentType");
     const mapped = _.mapValues(grouped, t => t.length);
     // The chart is updated only with new options.
-    console.log(mapped);
     setState({
       ...state,
       chartOptions: {

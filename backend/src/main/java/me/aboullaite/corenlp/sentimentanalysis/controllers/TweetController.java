@@ -12,14 +12,14 @@ import reactor.core.publisher.Flux;
 import twitter4j.TwitterException;
 
 @RestController
-public class Home {
+public class TweetController {
     @Autowired
     private TwitterService twitterService;
 
     @GetMapping(path = "/", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     @CrossOrigin(origins = "http://localhost:3000")
-    public Flux<TwitterStatus> fetch() throws TwitterException {
-        return twitterService.fetchTweets("java", 100);
+    public Flux<TwitterStatus> fetch(@PathVariable String keyword, @PathVariable int size) throws TwitterException {
+        return twitterService.fetchTweets(keyword, size);
     }
 
     @GetMapping(path = "/stream/{keyword}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
