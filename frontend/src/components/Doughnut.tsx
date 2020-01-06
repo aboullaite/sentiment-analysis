@@ -3,6 +3,7 @@ import * as Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 import _ from "lodash";
 import { Tweet } from "../model/Tweet";
+import Card from "react-bootstrap/Card";
 
 export default Doughnut;
 type Props = {
@@ -64,8 +65,8 @@ export function Doughnut({ tweets }: Props) {
     updateSeries(tweets, state);
   }, [tweets]);
   return (
-    <div>
+    <Card>
       <HighchartsReact highcharts={Highcharts} options={state.chartOptions} />
-    </div>
+    </Card>
   );
 }

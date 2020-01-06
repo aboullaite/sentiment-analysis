@@ -1,13 +1,13 @@
-import React, { Component } from "react";
-import { Alert, Button } from "react-bootstrap";
+import React from "react";
+import { Alert, Button, Badge } from "react-bootstrap";
 import Doughnut from "./Doughnut";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import Card from "react-bootstrap/Card";
 import Spinner from "react-bootstrap/Spinner";
 import { Tweet } from "../model/Tweet";
-import { stat } from "fs";
 import Moment from "react-moment";
+import Color from "./ColorMap";
+import Desc from "./Desc";
 // import "moment-timezone";
 
 interface TweetListProps {}
@@ -31,13 +31,13 @@ function TweetList() {
     const eventSource = new EventSource(
       "http://localhost:8080/stream/" + state.hashtag
     );
-    eventSource.onopen = (event: any) => console.log("open", event);
+    // eventSource.onopen = (event: any) => console.log("open", event);
     eventSource.onmessage = (event: any) => {
       const tweet = JSON.parse(event.data);
       let tweets = [...state.tweets, tweet];
       setState({ ...state, tweets: tweets });
     };
-    eventSource.onerror = (event: any) => console.log("error", event.data);
+    // eventSource.onerror = (event: any) => console.log("error", event.data);
     setState({ ...state, eventSource: eventSource });
     return eventSource.close;
   }, []);
@@ -57,16 +57,14 @@ function TweetList() {
     setState: (s: TweetListState) => void
   ): EventSource {
     state.eventSource?.close();
-    const eventSource = new EventSource(
-      "http://localhost:8080/stream/" + state.hashtag
-    );
-    eventSource.onopen = (event: any) => console.log("open", event);
+    const eventSource = new EventSource(process.env.PUBLIC_URL + state.hashtag);
+    // eventSource.onopen = (event: any) => console.log("open", event);
     eventSource.onmessage = (event: any) => {
       const tweet = JSON.parse(event.data);
       let tweets = [...state.tweets, tweet];
       setState({ ...state, tweets: tweets });
     };
-    eventSource.onerror = (event: any) => console.log("error", event.data);
+    // eventSource.onerror = (event: any) => console.log("error", event.data);
     return eventSource;
   }
 
@@ -77,16 +75,16 @@ function TweetList() {
     "info",
     "success"
   ];
-  const pluralize = (count: number, noun: string, suffix = "s") =>
-    `${count} ${noun}${count && count !== 1 ? suffix : ""}`;
 
   let { tweets } = state;
-  let tweetsAnalyzed = pluralize(state.tweets.length, "tweet");
   return (
     <Row>
       <Col xs={12} md={8}>
         <Col md={10}>
-          <h2>Tracked Keyword: {state.hashtag}</h2>
+          <h2>
+            Tracked Keyword:
+            <Badge variant="secondary">{state.hashtag}</Badge>
+          </h2>
         </Col>
         <Col md={2}>
           <Spinner animation="grow" variant="primary" />
@@ -114,7 +112,7 @@ function TweetList() {
             />
             <div className="input-group-append">
               <Button variant="outline-primary" type="submit">
-                Search
+                Fetch
               </Button>
             </div>
           </div>
@@ -145,16 +143,9 @@ function TweetList() {
         </div>
       </Col>
       <Col xs={4} md={4}>
-        <Card>
-          <Card.Body>
-            <Card.Title>{tweetsAnalyzed} analyzed</Card.Title>
-            The tweets are analysed as they came from Twitter Streaming API,
-            using Stanford CoreNLP library.
-          </Card.Body>
-        </Card>
-        <div className="card">
-          <Doughnut tweets={tweets} />
-        </div>
+        <Desc tweets={tweets.length} />
+        <Doughnut tweets={tweets} />
+        <Color />
       </Col>
     </Row>
   );

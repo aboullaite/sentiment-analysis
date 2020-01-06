@@ -45,6 +45,9 @@
   overflow: scroll;
   height: 600px;
 }
+.card .badge {
+  margin-right: 5px;
+}
 
 .alert img {
   border: 3px solid #9cc1d3;
