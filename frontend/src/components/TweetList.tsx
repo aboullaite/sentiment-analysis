@@ -17,6 +17,7 @@ interface TweetListState {
   isLoading: boolean;
   hashtag: string;
   eventSource?: EventSource;
+  API_URL: string;
 }
 
 function TweetList() {
@@ -24,12 +25,13 @@ function TweetList() {
     tweets: [],
     isLoading: false,
     hashtag: "HappyNewYear",
-    eventSource: undefined
+    eventSource: undefined,
+    API_URL: process.env.REACT_APP_API_URL!
   });
 
   React.useEffect(() => {
     const eventSource = new EventSource(
-      process.env.REACT_APP_API_URL + state.hashtag
+      state.API_URL + "stream/" + state.hashtag
     );
     // eventSource.onopen = (event: any) => console.log("open", event);
     eventSource.onmessage = (event: any) => {
@@ -53,13 +55,23 @@ function TweetList() {
   }, [state.tweets, state.eventSource, state.hashtag]);
 
   function newSearch(
+    stream: boolean,
     state: TweetListState,
     setState: (s: TweetListState) => void
   ): EventSource {
     state.eventSource?.close();
-    const eventSource = new EventSource(
-      process.env.REACT_APP_API_URL + state.hashtag
-    );
+    let api_url;
+    if (stream) {
+      api_url = process.env.REACT_APP_API_URL + "stream/" + state.hashtag;
+    } else {
+      api_url =
+        process.env.REACT_APP_API_URL +
+        "search/" +
+        state.hashtag +
+        "/" +
+        process.env.REACT_APP_SEARCH_TWEETS_COUNT;
+    }
+    const eventSource = new EventSource(api_url);
     // eventSource.onopen = (event: any) => console.log("open", event);
     eventSource.onmessage = (event: any) => {
       const tweet = JSON.parse(event.data);
@@ -94,11 +106,6 @@ function TweetList() {
         <form
           onSubmit={e => {
             e.preventDefault();
-            setState({
-              ...state,
-              eventSource: newSearch(state, setState),
-              tweets: []
-            });
           }}
         >
           <div className="input-group mb-3">
@@ -113,8 +120,31 @@ function TweetList() {
               aria-describedby="basic-addon2"
             />
             <div className="input-group-append">
-              <Button variant="outline-primary" type="submit">
-                Fetch
+              <Button
+                variant="outline-primary"
+                type="submit"
+                onClick={() => {
+                  setState({
+                    ...state,
+                    eventSource: newSearch(true, state, setState),
+                    tweets: []
+                  });
+                }}
+              >
+                Stream
+              </Button>
+              <Button
+                variant="outline-primary"
+                type="submit"
+                onClick={() => {
+                  setState({
+                    ...state,
+                    eventSource: newSearch(false, state, setState),
+                    tweets: []
+                  });
+                }}
+              >
+                Search
               </Button>
             </div>
           </div>
