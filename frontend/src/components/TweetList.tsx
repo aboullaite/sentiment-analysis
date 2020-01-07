@@ -39,7 +39,7 @@ function TweetList() {
       let tweets = [...state.tweets, tweet];
       setState({ ...state, tweets: tweets });
     };
-    // eventSource.onerror = (event: any) => console.log("error", event.data);
+    eventSource.onerror = (event: any) => console.log("error", event.data);
     setState({ ...state, eventSource: eventSource });
     return eventSource.close;
   }, []);
@@ -60,25 +60,14 @@ function TweetList() {
     setState: (s: TweetListState) => void
   ): EventSource {
     state.eventSource?.close();
-    let api_url;
-    if (stream) {
-      api_url = process.env.REACT_APP_API_URL + "stream/" + state.hashtag;
-    } else {
-      api_url =
-        process.env.REACT_APP_API_URL +
-        "search/" +
-        state.hashtag +
-        "/" +
-        process.env.REACT_APP_SEARCH_TWEETS_COUNT;
-    }
-    const eventSource = new EventSource(api_url);
-    // eventSource.onopen = (event: any) => console.log("open", event);
+    const eventSource = new EventSource(build_url(stream, state));
+    eventSource.onopen = (event: any) => console.log("open", event);
     eventSource.onmessage = (event: any) => {
       const tweet = JSON.parse(event.data);
       let tweets = [...state.tweets, tweet];
       setState({ ...state, tweets: tweets });
     };
-    // eventSource.onerror = (event: any) => console.log("error", event.data);
+    eventSource.onerror = (event: any) => eventSource.close();
     return eventSource;
   }
 
@@ -134,7 +123,7 @@ function TweetList() {
                 Stream
               </Button>
               <Button
-                variant="outline-primary"
+                variant="primary"
                 type="submit"
                 onClick={() => {
                   setState({
@@ -184,6 +173,20 @@ function TweetList() {
       </Col>
     </Row>
   );
+
+  function build_url(stream: boolean, state: TweetListState) {
+    if (stream) {
+      return process.env.REACT_APP_API_URL + "stream/" + state.hashtag;
+    } else {
+      return (
+        process.env.REACT_APP_API_URL +
+        "search/" +
+        state.hashtag +
+        "/" +
+        process.env.REACT_APP_SEARCH_TWEETS_COUNT
+      );
+    }
+  }
 }
 
 export default TweetList;

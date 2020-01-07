@@ -16,7 +16,7 @@ public class TweetController {
     @Autowired
     private TwitterService twitterService;
 
-    @GetMapping(path = "/", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @GetMapping(path = "search/{keyword}/{size}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     @CrossOrigin(origins = "http://localhost:3000")
     public Flux<TwitterStatus> fetch(@PathVariable String keyword, @PathVariable int size) throws TwitterException {
         return twitterService.fetchTweets(keyword, size);

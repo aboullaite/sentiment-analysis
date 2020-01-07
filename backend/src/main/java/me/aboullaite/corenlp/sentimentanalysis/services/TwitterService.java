@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import twitter4j.*;
 
 @Service
@@ -38,10 +39,7 @@ public class TwitterService {
         tweetFilterQuery.language(new String[]{"en"});
         return Flux.create(sink -> {
             stream.onStatus(status -> sink.next(this.cleanTweets(status)));
-            stream.onException(e -> {
-                log.error(e.getMessage());
-                stream.cleanUp();
-            });
+            stream.onException(sink::error);
             stream.filter(tweetFilterQuery);
             sink.onCancel(stream::shutdown);
         });
