@@ -12,7 +12,7 @@ import reactor.core.publisher.Flux;
 import twitter4j.TwitterException;
 
 @RestController
-public class TweetController {
+public class TweetsResource {
     @Autowired
     private TwitterService twitterService;
 

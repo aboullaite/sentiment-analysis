@@ -8,13 +8,9 @@ import { Tweet } from "../model/Tweet";
 import Moment from "react-moment";
 import Color from "./ColorMap";
 import Desc from "./Desc";
-// import "moment-timezone";
-
-interface TweetListProps {}
 
 interface TweetListState {
   tweets: Array<Tweet>;
-  isLoading: boolean;
   hashtag: string;
   eventSource?: EventSource;
   API_URL: string;
@@ -23,7 +19,6 @@ interface TweetListState {
 function TweetList() {
   let [state, setState] = React.useState<TweetListState>({
     tweets: [],
-    isLoading: false,
     hashtag: "HappyNewYear",
     eventSource: undefined,
     API_URL: process.env.REACT_APP_API_URL!
@@ -33,13 +28,12 @@ function TweetList() {
     const eventSource = new EventSource(
       state.API_URL + "stream/" + state.hashtag
     );
-    // eventSource.onopen = (event: any) => console.log("open", event);
     eventSource.onmessage = (event: any) => {
       const tweet = JSON.parse(event.data);
       let tweets = [...state.tweets, tweet];
       setState({ ...state, tweets: tweets });
     };
-    eventSource.onerror = (event: any) => console.log("error", event.data);
+    eventSource.onerror = (event: any) => eventSource.close();
     setState({ ...state, eventSource: eventSource });
     return eventSource.close;
   }, []);

@@ -18,7 +18,7 @@ public class SentimentAnalyzerService {
     public int analyse(String tweet) {
 
         Properties props = new Properties();
-        props.setProperty("annotators", "tokenize,ssplit,pos,parse, sentiment");
+        props.setProperty("annotators", "tokenize, ssplit, pos, parse, sentiment");
         StanfordCoreNLP pipeline = new StanfordCoreNLP(props);
         Annotation annotation = pipeline.process(tweet);
         for (CoreMap sentence : annotation.get(CoreAnnotations.SentencesAnnotation.class)) {
