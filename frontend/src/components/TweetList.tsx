@@ -19,7 +19,7 @@ interface TweetListState {
 function TweetList() {
   let [state, setState] = React.useState<TweetListState>({
     tweets: [],
-    hashtag: "HappyNewYear",
+    hashtag: "Java",
     eventSource: undefined,
     API_URL: process.env.REACT_APP_API_URL!
   });
